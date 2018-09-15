@@ -36,7 +36,7 @@ namespace _03___mvc.Controllers
             {
                 StatusCode = 200,
                 ContentType = "text/plain",
-                Content = $"Server [{_tracking.ServerGuid.ToString()}] will be graceful shutdown soon"
+                Content = $"Server [{_tracking.ServerGuid.ToString()}] will be graceful shutdown soon, \r\nrequested by {model.UserName}({model.Id}) \r\nreason:{model.Reason}"
             };
         }
     }
