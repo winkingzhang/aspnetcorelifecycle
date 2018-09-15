@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 
-namespace _01___1min_demo.Middlewares
+namespace _02___startup.Middlewares
 {
     // You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
-    public class SampleMiddleware : IMiddleware
+    public class ShutdownMiddleware : IMiddleware
     {
         private readonly IApplicationLifetime _lifetime;
 
-        public SampleMiddleware(IApplicationLifetime lifetime)
+        public ShutdownMiddleware(IApplicationLifetime lifetime)
         {
             _lifetime = lifetime;
         }
@@ -35,11 +35,11 @@ namespace _01___1min_demo.Middlewares
     }
 
     // Extension method used to add the middleware to the HTTP request pipeline.
-    public static class SampleMiddlewareExtensions
+    public static class ShutdownMiddlewareExtensions
     {
-        public static IApplicationBuilder UseSampleMiddleware(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseShutdownMiddleware(this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<SampleMiddleware>();
+            return builder.UseMiddleware<ShutdownMiddleware>();
         }
     }
 }

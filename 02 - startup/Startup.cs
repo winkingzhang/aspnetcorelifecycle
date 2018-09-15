@@ -9,6 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+using _02___startup.Middlewares;
+using Microsoft.Extensions.ObjectPool;
+
 namespace _02___startup
 {
     public class Startup
@@ -36,6 +39,8 @@ namespace _02___startup
                 options.Cookie.HttpOnly = true;
             });
             //services.AddScoped<CustomerTracker>()
+
+            services.AddTransient<ShutdownMiddleware>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,20 +51,53 @@ namespace _02___startup
                 app.UseDeveloperExceptionPage();
             }
 
+            // demo 3
+            // ---------------------------
+            app.UseShutdownMiddleware();
+
+            app.UseStaticFiles("/public");
+            // ---------------------------
+
             app.UseSession();
 
             app.Map("/endpoint", (builder) =>
             {
-                builder.Run(async (context) => {
+                builder.Run(async (context) =>
+                {
                     await context.Response.WriteAsync("Hello in Map");
                 });
             });
+
+            // demo 3
+            // ---------------------------
+            app.Map("/objectPool", (builder) =>
+            {
+                builder.Run(async (context) =>
+                {
+                    var objPool = app.ApplicationServices.GetService<ObjectPoolProvider>().Create<BigObject>();
+
+                    Parallel.For(0, 100, i =>
+                    {
+                        var o = objPool.Get();
+                        Task.Delay(2).ContinueWith((arg) => objPool.Return(o));
+                    });
+                    await context.Response.WriteAsync("Memory: " + GC.GetTotalMemory(false).ToString());
+                });
+            });
+            // ---------------------------
 
             // This is the last fallback middleware
             app.Run(async (context) =>
             {
                 await context.Response.WriteAsync("Hello in last Run!");
+
             });
+        }
+
+
+        internal class BigObject
+        {
+            public int[] value = new int[1024 * 100];
         }
     }
 }

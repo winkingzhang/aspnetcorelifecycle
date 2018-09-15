@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using _03___mvc.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -24,6 +25,10 @@ namespace _03___mvc
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddTrackingServer();
+
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -38,6 +43,13 @@ namespace _03___mvc
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.Use(async (context, next) =>
+            {
+                await next.Invoke();
+
+                await context.Response.WriteAsync($"ServerID: {app.ApplicationServices.GetService<ITrackingServer>().ServerGuid.ToString()}");
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

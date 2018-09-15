@@ -1,0 +1,18 @@
+﻿
+@model RequestedUserViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<form asp-controller="GracefulShutdown" asp-action="Confirm" method="post">
+    User ID:<br />
+    <input asp-for="Id" /><br />
+    User Name:<br />
+    <input asp-for="UserName" /><br />
+    Shutdown reason:<br />
+    <input asp-for="Reason" /><br /><br />
+
+    <button type="submit">Shutdown</button>
+</form>
